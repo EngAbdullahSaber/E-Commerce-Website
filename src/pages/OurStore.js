@@ -1,13 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import BreadCrumb from "../components/BreadCrumb";
 import Meta from "../components/Meta";
 import ReactStars from "react-rating-stars-component";
 import { Col, Container, Row } from "react-bootstrap";
-import ProductCard from "../components/ProductCard";
+import ProductOfStore from "../components/ProductOfStore";
 import Colors from "../components/Colors";
+import { productDataSore } from "../utils/Data";
 
 const OurStore = () => {
   const [grid, setGrid] = useState(4);
+  // const [item, setItem] = useState(productDataSore);
+  // const [stock, setStock] = useState("");
+  // const dataFilter = (e) => {
+  //   setStock(e.target.innerHTML);
+
+  //   const filteredData = productDataSore.filter((d) => {
+  //     return d.title == stock;
+  //   });
+
+  //   setItem(filteredData);
+  // };
+  // // handle select change
+  // const handleGenderSelect = (e) => {};
+  const [sportList, setSportList] = useState([]);
+
+  const [selectedCategory, setSelectedCategory] = useState("");
+  useEffect(() => {
+    setSportList(productDataSore);
+  }, []);
+  function handleCategoryChange(event) {
+    setSelectedCategory(event.target.innerHTML);
+  }
+  function getFilteredList() {
+    if (!selectedCategory) {
+      return sportList;
+    }
+    return sportList.filter((item) => item.title === selectedCategory);
+  }
+  var filteredList = useMemo(getFilteredList, [selectedCategory, sportList]);
+
   const gridSetter = (i) => {
     setGrid(i);
   };
@@ -15,6 +46,7 @@ const OurStore = () => {
     <>
       <Meta title="Our Store" />
       <BreadCrumb title="Our Store" />
+
       <div className="store-wrapper home-wrapper-2 py-5">
         <Container>
           <Row>
@@ -22,11 +54,13 @@ const OurStore = () => {
               <div className="filter-card mb-3">
                 <h3 className="filter-title">Shop By Categories</h3>
                 <div>
-                  <ul className="ps-0">
-                    <li>Watch</li>
+                  <ul className="ps-0" onClick={handleCategoryChange}>
+                    <li>Watches</li>
                     <li>Tv</li>
                     <li>Camera</li>
-                    <li>Labtop</li>
+                    <li>Laptpo</li>
+                    <li>HeadPhone</li>
+                    <li>Tablets</li>
                   </ul>
                 </div>
               </div>
@@ -244,8 +278,21 @@ const OurStore = () => {
               </div>
               <div className="product-list pb-5">
                 <div className="d-flex gap-10">
-                  <ProductCard grid={grid} />
-                  <ProductCard grid={grid} />
+                  <Row>
+                    {filteredList.map((item) => {
+                      return (
+                        <ProductOfStore
+                          key={item.id}
+                          id={item.id}
+                          title={item.title}
+                          desc={item.desc}
+                          image={item.image}
+                          price={item.price}
+                          rating={item.rating}
+                        />
+                      );
+                    })}
+                  </Row>
                 </div>
               </div>
             </Col>
